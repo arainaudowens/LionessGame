@@ -8,8 +8,8 @@ class GameWindow < Gosu::Window
   attr_accessor :GameState
 
   def initialize
-    super(Gosu.screen_width, Gosu.screen_height, true) 
-    #super(640,480,false)
+    #super(Gosu.screen_width, Gosu.screen_height, true) 
+    super(640,480,false)
     self.caption = "Lioness Game"
 
     # we load the font once during initialize, much faster than
@@ -39,7 +39,11 @@ class GameWindow < Gosu::Window
   
   def button_down(id)
     if id == Gosu::KbEscape
-      close  # exit on press of escape key
+      if @GameState == :gameWorld
+        @GameState = :mainMenu
+      else
+        close
+      end
     elsif @GameState = :mainMenu
       @MainMenu.button_down(id)
     elsif @GameState = :gameWorld
