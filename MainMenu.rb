@@ -8,7 +8,7 @@ class MainMenu
     yDrawPos = @window.height / 6
     yIncrement = @window.height / 8
     xDrawPos = 80
-    menuTitles = ["Lioness Game", "Start Game", "Settings", "Exit"]
+    menuTitles = ["Lioness Game", "Start Game (press Enter)", "Settings", "Exit"]
     menuTitles.each do |title|
       @menuItems << [title, xDrawPos, yDrawPos]
       yDrawPos += yIncrement
