@@ -6,8 +6,8 @@ require_relative 'MainMenu.rb'
 
 class GameWindow < Gosu::Window
   def initialize
-    #super(Gosu.screen_width, Gosu.screen_height, true) 
-    super(640,480,false)
+    super(Gosu.screen_width, Gosu.screen_height, true) 
+    #super(640,480,false)
     self.caption = "Lioness Game"
 
     # we load the font once during initialize, much faster than

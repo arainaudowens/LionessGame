@@ -1,8 +1,18 @@
 class MainMenu
   def initialize(window)
     @window = window
+    @titleFont
     @font = Gosu::Font.new(@window, Gosu::default_font_name, 20)
-    @stringu = "mainmanu"
+    @menuItems = []
+
+    yDrawPos = @window.height / 6
+    yIncrement = @window.height / 8
+    xDrawPos = 80
+    menuTitles = ["Lioness Game", "Start Game", "Settings", "Exit"]
+    menuTitles.each do |title|
+      @menuItems << [title, xDrawPos, yDrawPos]
+      yDrawPos += yIncrement
+    end
   end
   
   def update
@@ -10,6 +20,8 @@ class MainMenu
   end
 
   def draw
-    @font.draw(@stringu, 0, 0, 1)
+    @menuItems.each do |i|
+      @font.draw(i[0], i[1], i[2], 1)
+    end
   end
 end
