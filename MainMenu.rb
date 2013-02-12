@@ -25,7 +25,7 @@ class MainMenu
     @menuItems.each do |i|
       @font.draw(i[0], i[1], i[2], 1)
     end
-    @selectedArrow.draw(@menuItems[@selectedItem][1] - ((@selectedArrow.width) * 0.1), @menuItems[@selectedItem][2]-5, 1, 0.1, 0.1)
+    @selectedArrow.draw(@menuItems[@selectedItem][1] - ((@selectedArrow.width) * 0.1), @menuItems[@selectedItem][2]-7, 1, 0.1, 0.1)
   end
 
   def button_down(id)
