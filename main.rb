@@ -5,6 +5,8 @@ require_relative 'GameWorld.rb'
 require_relative 'MainMenu.rb'
 
 class GameWindow < Gosu::Window
+  attr_accessor :GameState
+
   def initialize
     super(Gosu.screen_width, Gosu.screen_height, true) 
     #super(640,480,false)
@@ -38,12 +40,10 @@ class GameWindow < Gosu::Window
   def button_down(id)
     if id == Gosu::KbEscape
       close  # exit on press of escape key
-    end
-    if id == Gosu::KbG
-      @GameState = :gameWorld
-    end
-    if id == Gosu::KbM
-      @GameState = :mainMenu
+    elsif @GameState = :mainMenu
+      @MainMenu.button_down(id)
+    elsif @GameState = :gameWorld
+      @GameWorld.button_down(id)
     end
   end
 end
