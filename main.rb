@@ -7,7 +7,8 @@ require_relative 'MainMenu.rb'
 class GameWindow < Gosu::Window
 
   def initialize
-    super(Gosu.screen_width, Gosu.screen_height, true)
+    #super(Gosu.screen_width, Gosu.screen_height, true) 
+    super(640,480,false)
     self.caption = "Lioness Game"
 	
     # we load the font once during initialize, much faster than
@@ -38,6 +39,12 @@ class GameWindow < Gosu::Window
   def button_down(id)
     if id == Gosu::KbEscape
       close  # exit on press of escape key
+    end
+    if id == Gosu::KbG
+      @GameState = :gameWorld
+    end
+    if id == Gosu::KbM
+      @GameState = :mainMenu
     end
   end
 
