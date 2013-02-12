@@ -37,7 +37,7 @@ class MainMenu
       @selectedItem += 1
     elsif id == Gosu::KbReturn or id == Gosu::KbEnter
       if @menuItems[@selectedItem][0] == "Exit"
-        close
+        @window.close
       elsif @menuItems[@selectedItem][0] == "Start Game"
         @window.GameState = :gameWorld
       end

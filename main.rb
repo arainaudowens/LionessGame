@@ -44,9 +44,9 @@ class GameWindow < Gosu::Window
       else
         close
       end
-    elsif @GameState = :mainMenu
+    elsif @GameState == :mainMenu
       @MainMenu.button_down(id)
-    elsif @GameState = :gameWorld
+    elsif @GameState == :gameWorld
       @GameWorld.button_down(id)
     end
   end
