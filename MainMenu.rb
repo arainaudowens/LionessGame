@@ -6,9 +6,9 @@ class MainMenu
   end
   
   def update
-    
+
   end
-  
+
   def draw
     @font.draw(@stringu, 0, 0, 1)
   end
