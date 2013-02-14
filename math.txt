@@ -1,0 +1,2 @@
+sin(theta) * speed - vertical
+cos(theta) * speed - horizontal
