@@ -16,7 +16,7 @@ class MainMenu
       yDrawPos += yIncrement
     end
   end
-  
+
   def update
   end
 
