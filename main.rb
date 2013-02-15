@@ -3,13 +3,15 @@ require 'gosu'
 
 require_relative 'GameWorld'
 require_relative 'MainMenu'
+require_relative 'PauseMenu'
+require_relative 'GameOver'
 require_relative 'Animal'
 require_relative 'Lioness'
 require_relative 'Wildebeest'
 
 class GameWindow < Gosu::Window
-  attr_accessor :GameState
   attr_accessor :WORLD_EDGE_LEFT, :WORLD_EDGE_RIGHT, :WORLD_EDGE_UP, :WORLD_EDGE_DOWN
+  attr_accessor :GameState
 
   def initialize
     #super(Gosu.screen_width, Gosu.screen_height, true)
@@ -26,31 +28,29 @@ class GameWindow < Gosu::Window
 
     @MainMenu = MainMenu.new(self)
     @GameWorld = GameWorld.new(self)
-    @GameState = :mainMenu
+    @PauseMenu = PauseMenu.new(self, @GameWorld)
+    @GameOver = GameOver.new(self, @GameWorld)
+    @GameState = :MainMenu
+
+    # GameState management done with a hash
+    @GSHash = {
+      :MainMenu => @MainMenu,
+      :GameWorld => @GameWorld,
+      :PauseMenu => @PauseMenu,
+      :GameOver => @GameOver
+    }
   end
 
   def update
-    if(@GameState == :mainMenu)
-      @MainMenu.update()
-    elsif(@GameState == :gameWorld)
-      @GameWorld.update()
-    end
+    @GSHash[@GameState].update
   end
 
   def draw
-    if(@GameState == :mainMenu)
-      @MainMenu.draw()
-    elsif(@GameState == :gameWorld)
-      @GameWorld.draw()
-    end
+    @GSHash[@GameState].draw
   end
 
   def button_down(id)
-    if @GameState == :mainMenu
-      @MainMenu.button_down(id)
-    elsif @GameState == :gameWorld
-      @GameWorld.button_down(id)
-    end
+    @GSHash[@GameState].button_down(id)
   end
 end
 

@@ -2,7 +2,6 @@ class GameWorld
   def initialize(window)
     @window = window
 
-    #@font = Gosu::Font.new(@window, Gosu::default_font_name, 20)
     @lioness = Lioness.new(@window)
     @animals = []
     1..10.times do
@@ -28,7 +27,7 @@ class GameWorld
 
   def button_down(id)
     if id == Gosu::KbEscape
-      @window.GameState = :mainMenu
+      @window.GameState = :PauseMenu
     else
       @lioness.button_down(id)
     end

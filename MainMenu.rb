@@ -18,6 +18,7 @@ class MainMenu
   end
 
   def update
+
   end
 
   def draw
@@ -36,10 +37,10 @@ class MainMenu
     elsif id == Gosu::KbDown and @selectedItem < @menuItems.length-1
       @selectedItem += 1
     elsif id == Gosu::KbReturn or id == Gosu::KbEnter
-      if @menuItems[@selectedItem][0] == "Exit"
+      if @menuItems[@selectedItem][0] == "Start Game"
+        @window.GameState = :GameWorld
+      elsif @menuItems[@selectedItem][0] == "Exit"
         @window.close
-      elsif @menuItems[@selectedItem][0] == "Start Game"
-        @window.GameState = :gameWorld
       end
     end
   end
