@@ -14,6 +14,11 @@ class GameWorld
     @animals.each do |a|
       a.update
     end
+    @animals.map do |a|
+      if a.collide?(@lioness)
+        @window.GameState = :GameOver
+      end
+    end
   end
 
   def draw

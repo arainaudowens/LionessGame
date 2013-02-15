@@ -1,4 +1,6 @@
 class Lioness < Animal
+  attr_accessor :x, :y
+
   def initialize(window)
     super(window)
     @x = @window.width / 2
