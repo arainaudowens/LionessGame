@@ -2,11 +2,7 @@ class GameWorld
   def initialize(window)
     @window = window
 
-    @lioness = Lioness.new(@window)
-    @animals = []
-    1..10.times do
-      @animals << Wildebeest.new(@window)
-    end
+    generate_animals
   end
 
   def update
@@ -35,6 +31,14 @@ class GameWorld
       @window.GameState = :PauseMenu
     else
       @lioness.button_down(id)
+    end
+  end
+
+  def generate_animals
+    @lioness = Lioness.new(@window)
+    @animals = []
+    1..10.times do
+      @animals << Wildebeest.new(@window)
     end
   end
 end

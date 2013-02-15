@@ -4,6 +4,12 @@ class Animal
 
     @x = rand(0..@window.width)
     @y = rand(0..@window.height)
+    while ((@window.width / 2) - @x).abs <= 50
+      @x = rand(0..@window.width)
+    end
+    while ((@window.height / 2) - @y).abs <= 50
+      @y = rand(0..@window.height)
+    end
     @zorder = 1
     @direction = rand(0..359)
 
