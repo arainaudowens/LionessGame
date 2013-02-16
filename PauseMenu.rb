@@ -50,10 +50,16 @@ class PauseMenu
     @window.draw_quad(0, 0, modalColor, 0, @window.height, modalColor, @window.width, 0, modalColor, @window.width, @window.height, modalColor, 10)
 
     # Draw the pause menu background box
-    backgroundColor = 0xFF000000
-    backgroundColor2 = 0xFFFFFFFF
-    @window.draw_quad(@menuBackground[0] - 5, @menuBackground[2] - 5, backgroundColor2, @menuBackground[1] + 5, @menuBackground[2] - 5, backgroundColor2, @menuBackground[0] - 5, @menuBackground[3] + 5, backgroundColor2, @menuBackground[1] + 5, @menuBackground[3] + 5, backgroundColor2, 11)
-    @window.draw_quad(@menuBackground[0], @menuBackground[2], backgroundColor, @menuBackground[1], @menuBackground[2], backgroundColor, @menuBackground[0], @menuBackground[3], backgroundColor, @menuBackground[1], @menuBackground[3], backgroundColor, 12)
+    backgroundColor = 0xFFFFFFFF # white outer box
+    backgroundColor2 = 0xFF000000 # black inner box
+    @window.draw_quad(@menuBackground[0] - 5, @menuBackground[2] - 5, backgroundColor,
+                      @menuBackground[1] + 5, @menuBackground[2] - 5, backgroundColor,
+                      @menuBackground[0] - 5, @menuBackground[3] + 5, backgroundColor,
+                      @menuBackground[1] + 5, @menuBackground[3] + 5, backgroundColor, 11)
+    @window.draw_quad(@menuBackground[0], @menuBackground[2], backgroundColor2,
+                      @menuBackground[1], @menuBackground[2], backgroundColor2,
+                      @menuBackground[0], @menuBackground[3], backgroundColor2,
+                      @menuBackground[1], @menuBackground[3], backgroundColor2, 12)
 
     # Draw the menu items
     @menuItems.each do |i|

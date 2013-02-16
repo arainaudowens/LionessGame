@@ -1,20 +1,21 @@
 class Animal
+  attr_reader :x, :y
+
   def initialize(window)
     @window = window
 
     @x = rand(0..@window.width)
     @y = rand(0..@window.height)
-    while ((@window.width / 2) - @x).abs <= 50
+    while @x < 200 and @y < 200
       @x = rand(0..@window.width)
-    end
-    while ((@window.height / 2) - @y).abs <= 50
       @y = rand(0..@window.height)
     end
-    @zorder = 1
     @direction = rand(0..359)
+    @speed
 
     @img
-    @speed
+    @zorder = 1
+    @scaling = 1
   end
 
   def update
@@ -22,12 +23,16 @@ class Animal
   end
 
   def draw
-    @img.draw_rot(@x, @y, @zorder, @direction)
+    @img.draw_rot(@x, @y, @zorder, @direction, 0.5, 0.5, @scaling, @scaling)
+  end
+
+  def button_down(id)
+
   end
 
   def move
-    xChange = Math.cos(@direction.gosu_to_radians) * @speed
-    yChange = Math.sin(@direction.gosu_to_radians) * @speed
+    xChange = Math.cos(@direction.gosu_to_radians) * get_speed
+    yChange = Math.sin(@direction.gosu_to_radians) * get_speed
     @x = xEdgeCheck(@x, xChange)
     @y = yEdgeCheck(@y, yChange)
   end
@@ -56,7 +61,12 @@ class Animal
     newY
   end
 
-  def button_down(id)
+  def collide?(animal)
+    return true if (@x - animal.x).abs < 30 and (@y - animal.y).abs < 30
+    return false
+  end
 
+  def get_speed
+    @speed
   end
 end

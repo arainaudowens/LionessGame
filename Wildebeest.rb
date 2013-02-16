@@ -29,9 +29,4 @@ class Wildebeest < Animal
   def draw
     @img.draw_rot(@x, @y, @zorder, @direction)
   end
-
-  def collide?(animal)
-    return true if (@x - animal.x).abs < 25 and (@y - animal.y).abs < 25
-    return false
-  end
 end

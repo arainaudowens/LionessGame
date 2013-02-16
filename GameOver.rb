@@ -18,6 +18,7 @@ class GameOver
     modalColor = 0x88000000
     @window.draw_quad(0, 0, modalColor, 0, @window.height, modalColor, @window.width, 0, modalColor, @window.width, @window.height, modalColor, 10)
 
+    # Draw the text
     gameOverText = "YOU WIN"
     subtext = "Press enter to return to the main menu."
     @gameOverFont.draw(gameOverText, @window.width / 2 - (@gameOverFont.text_width(gameOverText) / 2), @window.height / 3, 11)
@@ -26,8 +27,8 @@ class GameOver
 
   def button_down(id)
     if id == Gosu::KbEnter or id == Gosu::KbReturn or id == Gosu::KbEscape
-      @GameWorld.generate_animals
       @window.GameState = :MainMenu
+      @GameWorld.generate_animals
     end
   end
 end

@@ -1,35 +1,40 @@
 class Lioness < Animal
-  attr_accessor :x, :y
-
   def initialize(window)
     super(window)
-    @x = @window.width / 2
-    @y = @window.height / 2
+    @x = 50
+    @y = 50
     @zorder = 2
-    @direction = 0
+    @direction = 135
 
     @img = Gosu::Image.new(@window, "images/lionessresized.png", false)
-    @speed = 3
 
-=begin
-    @scaling = 1
-    @pouncing = false
+    @SpeedState = :normal
+    @SpeedHash = {
+      :still => 0,
+      :prowl => 1,
+      :recovering => 1.5,
+      :normal => 3,
+      :sprint => 5,
+      :pouncing => 8
+    }
+
     @pounceCounter = 0
-=end
   end
 
   def update
-=begin
-    if @pouncing
-      @pounceCounter += 1
-      if @pounceCounter == 30
-        @pouncing = false
-        @pounceCounter = 0
-        @zorder = 2
-        @scaling = 1
+    pounce_update
+
+    unless @SpeedState == :pouncing or @SpeedState == :recovering
+      shift = @window.button_down?(Gosu::KbLeftShift) or @window.button_down?(Gosu::KbRightShift)
+      alt = @window.button_down?(Gosu::KbLeftAlt) or @window.button_down?(Gosu::KbRightAlt)
+      if shift and not alt
+        @SpeedState = :sprint
+      elsif alt
+        @SpeedState = :prowl
+      else
+        @SpeedState = :normal
       end
     end
-=end
 
     left = @window.button_down?(Gosu::KbLeft)
     right = @window.button_down?(Gosu::KbRight)
@@ -45,45 +50,52 @@ class Lioness < Animal
     end
     if left and up
       @direction = 315
-      @speed = 3
     elsif right and up
       @direction = 45
-      @speed = 3
     elsif left and down
       @direction = 225
-      @speed = 3
     elsif right and down
       @direction = 135
-      @speed = 3
     elsif left
       @direction = 270
-      @speed = 3
     elsif right
       @direction = 90
-      @speed = 3
     elsif up
       @direction = 0
-      @speed = 3
     elsif down
       @direction = 180
-      @speed = 3
-    else
-      @speed = 0
+    elsif @pounceCounter <= 0
+      @SpeedState = :still
     end
     move
   end
 
-  def draw
-    @img.draw_rot(@x, @y, @zorder, @direction)
-  end
-
   def button_down(id)
-    if id == Gosu::KbLeftShift or id == Gosu::KbRightShift
-=begin
-      @pouncing = true
+    if id == Gosu::KbSpace and @pounceCounter == 0
+      @SpeedState = :pouncing
       @zorder = 3
       @scaling = 1.2
-=end
+      @pounceCounter = 1
     end
+  end
+
+  def get_speed
+    @SpeedHash[@SpeedState]
+  end
+
+  def pounce_update
+    # Pounces last 10 frames with 30 frame cooldown
+    if @pounceCounter == 10
+      @pounceCounter = -30
+      @zorder = 2
+      @scaling = 1
+    end
+
+    # The lioness moves slower when recovering from a pounce
+    @SpeedState = :recovering if @pounceCounter < 0
+    @SpeedState = :normal if @pounceCounter == 0
+
+    # Update the pounce counter if necessary
+    @pounceCounter += 1 if @SpeedState == :pouncing or @SpeedState == :recovering
   end
 end
