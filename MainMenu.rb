@@ -5,12 +5,13 @@ class MainMenu
     @font = Gosu::Font.new(@window, Gosu::default_font_name, 20)
     @menuItems = []
     @selectedItem = 0
-    @selectedArrow = Gosu::Image.new(@window, "images/newarrow.png", false)
+    @selectedArrow = Gosu::Image.new(@window, "images/arrow.png", false)
 
     yDrawPos = 2 * (@window.height / 8)
     yIncrement = @window.height / 8
     xDrawPos = 120
-    menuTitles = ["Start Game", "Exit"]
+    rootTitles = ["Start Game", "Exit"]
+    preyTitles = ["Wildebeest", "Zebra", "Gazelle"]
     menuTitles.each do |title|
       @menuItems << [title, xDrawPos, yDrawPos]
       yDrawPos += yIncrement

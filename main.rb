@@ -14,8 +14,8 @@ class GameWindow < Gosu::Window
   attr_accessor :GameState
 
   def initialize
-    #super(Gosu.screen_width, Gosu.screen_height, true)
-    super(640, 480, false)
+    super(Gosu.screen_width, Gosu.screen_height, true)
+    #super(640, 480, false)
     self.caption = "Lioness Game"
 
     # initializing the constants for the edge of the world

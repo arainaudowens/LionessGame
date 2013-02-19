@@ -20,7 +20,7 @@ class PauseMenu
 
     # Menu Navigation
     @selectedItem = 0
-    @selectedArrow = Gosu::Image.new(@window, "images/newarrow.png", false)
+    @selectedArrow = Gosu::Image.new(@window, "images/arrow.png", false)
 
     # create the 2D array of menu titles and their draw positions
     menuTitles.each do |title|

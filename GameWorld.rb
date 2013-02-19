@@ -37,7 +37,7 @@ class GameWorld
   def generate_animals
     @lioness = Lioness.new(@window)
     @animals = []
-    1..10.times do
+    10.times do
       @animals << Wildebeest.new(@window)
     end
   end

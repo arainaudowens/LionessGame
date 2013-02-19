@@ -4,9 +4,12 @@ class Lioness < Animal
     @x = 50
     @y = 50
     @zorder = 2
-    @direction = 135
+    @currentDirection = 135
+    @desiredDirection = @currentDirection
 
-    @img = Gosu::Image.new(@window, "images/lionessresized.png", false)
+    #@img = Gosu::Image.new(@window, "images/lionessresized.png", false)
+    @img = Gosu::Image.load_tiles(@window, "images/lionesstiles.png", -5, -1, false)
+    @imgcounter = 0
 
     @SpeedState = :normal
     @SpeedHash = {
@@ -15,14 +18,18 @@ class Lioness < Animal
       :recovering => 1.5,
       :normal => 3,
       :sprint => 5,
-      :pouncing => 8
+      :pouncing => 10
     }
 
     @pounceCounter = 0
+    @turnSpeed = 5
   end
 
   def update
+    super
     pounce_update
+    @imgcounter %= 40
+    @imgcounter += 1
 
     unless @SpeedState == :pouncing or @SpeedState == :recovering
       shift = @window.button_down?(Gosu::KbLeftShift) or @window.button_down?(Gosu::KbRightShift)
@@ -49,25 +56,35 @@ class Lioness < Animal
       down = false
     end
     if left and up
-      @direction = 315
+      @desiredDirection = 315
     elsif right and up
-      @direction = 45
+      @desiredDirection = 45
     elsif left and down
-      @direction = 225
+      @desiredDirection = 225
     elsif right and down
-      @direction = 135
+      @desiredDirection = 135
     elsif left
-      @direction = 270
+      @desiredDirection = 270
     elsif right
-      @direction = 90
+      @desiredDirection = 90
     elsif up
-      @direction = 0
+      @desiredDirection = 0
     elsif down
-      @direction = 180
+      @desiredDirection = 180
     elsif @pounceCounter <= 0
       @SpeedState = :still
     end
     move
+  end
+
+  def draw
+    if @SpeedState == :pouncing
+      @img[4].draw_rot(@x, @y, @zorder, @currentDirection, 0.5, 0.5, @scaling, @scaling)
+    elsif @SpeedState == :still
+      @img[0].draw_rot(@x, @y, @zorder, @currentDirection)
+    else
+      @img[(@imgcounter/10).floor].draw_rot(@x, @y, @zorder, @currentDirection)
+    end
   end
 
   def button_down(id)
