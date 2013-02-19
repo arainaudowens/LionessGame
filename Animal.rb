@@ -11,12 +11,12 @@ class Animal
       @y = rand(0..@window.height)
     end
 
-    @speed
     @currentDirection = rand(0..359)
     @desiredDirection = @currentDirection
     @turnSpeed = 5
+    @speed = 5
 
-    @img
+    @img = Gosu::Image.load_tiles(@window, "images/wildebeesttiles.png", -5, -1, false)[0]
     @zorder = 1
     @scaling = 1
   end
@@ -26,7 +26,7 @@ class Animal
   end
 
   def draw
-    @img[0].draw_rot(@x, @y, @zorder, @currentDirection, 0.5, 0.5, @scaling, @scaling)
+    @img.draw_rot(@x, @y, @zorder, @currentDirection, 0.5, 0.5, @scaling, @scaling)
   end
 
   def button_down(id)

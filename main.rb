@@ -8,6 +8,8 @@ require_relative 'GameOver'
 require_relative 'Animal'
 require_relative 'Lioness'
 require_relative 'Wildebeest'
+require_relative 'Zebra'
+require_relative 'Gazelle'
 
 class GameWindow < Gosu::Window
   attr_accessor :WORLD_EDGE_LEFT, :WORLD_EDGE_RIGHT, :WORLD_EDGE_UP, :WORLD_EDGE_DOWN
@@ -27,18 +29,13 @@ class GameWindow < Gosu::Window
     @WORLD_EDGE_DOWN = self.height + 5
 
     @MainMenu = MainMenu.new(self)
-    @GameWorld = GameWorld.new(self)
-    @PauseMenu = PauseMenu.new(self, @GameWorld)
-    @GameOver = GameOver.new(self, @GameWorld)
+    @GameWorld
+    @PauseMenu
+    @GameOver
     @GameState = :MainMenu
 
     # GameState management done with a hash
-    @GSHash = {
-      :MainMenu => @MainMenu,
-      :GameWorld => @GameWorld,
-      :PauseMenu => @PauseMenu,
-      :GameOver => @GameOver
-    }
+    define_GSHash
   end
 
   def update
@@ -51,6 +48,22 @@ class GameWindow < Gosu::Window
 
   def button_down(id)
     @GSHash[@GameState].button_down(id)
+  end
+
+  def new_game(animalType)
+    @GameWorld = GameWorld.new(self, animalType)
+    @PauseMenu = PauseMenu.new(self, @GameWorld)
+    @GameOver = GameOver.new(self, @GameWorld, @MainMenu)
+    define_GSHash
+  end
+
+  def define_GSHash
+    @GSHash = {
+      :MainMenu => @MainMenu,
+      :GameWorld => @GameWorld,
+      :PauseMenu => @PauseMenu,
+      :GameOver => @GameOver
+    }
   end
 end
 

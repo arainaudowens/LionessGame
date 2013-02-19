@@ -1,7 +1,8 @@
 class GameOver
-  def initialize(window, gameWorld)
+  def initialize(window, gameWorld, mainMenu)
     @window = window
     @GameWorld = gameWorld
+    @MainMenu = mainMenu
     @gameOverFont = Gosu::Font.new(@window, Gosu::default_font_name, 40)
     @font = Gosu::Font.new(@window, Gosu::default_font_name, 20)
   end
@@ -28,7 +29,7 @@ class GameOver
   def button_down(id)
     if id == Gosu::KbEnter or id == Gosu::KbReturn or id == Gosu::KbEscape
       @window.GameState = :MainMenu
-      @GameWorld.generate_animals
+      @MainMenu.root
     end
   end
 end

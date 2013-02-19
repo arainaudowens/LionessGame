@@ -1,0 +1,3 @@
+class Zebra < Animal
+
+end

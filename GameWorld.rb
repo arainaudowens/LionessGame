@@ -1,8 +1,14 @@
 class GameWorld
-  def initialize(window)
+  def initialize(window, animalType)
     @window = window
 
-    generate_animals
+    @AnimalHash = {
+      "Wildebeest" => Wildebeest,
+      "Zebra" => Zebra,
+      "Gazelle" => Gazelle
+    }
+
+    generate_animals(@AnimalHash[animalType])
   end
 
   def update
@@ -34,11 +40,12 @@ class GameWorld
     end
   end
 
-  def generate_animals
+  def generate_animals(animal)
     @lioness = Lioness.new(@window)
+
     @animals = []
     10.times do
-      @animals << Wildebeest.new(@window)
+      @animals << animal.new(@window)
     end
   end
 end

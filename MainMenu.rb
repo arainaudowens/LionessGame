@@ -1,21 +1,21 @@
 class MainMenu
+  INITIAL_X_DRAW = 120
+  INITIAL_Y_DRAW = 200
+  INITIAL_Y_INCREMENT = 100
+
   def initialize(window)
     @window = window
+
     @titleFont = Gosu::Font.new(@window, "Helvetica", 30)
     @font = Gosu::Font.new(@window, Gosu::default_font_name, 20)
     @menuItems = []
     @selectedItem = 0
     @selectedArrow = Gosu::Image.new(@window, "images/arrow.png", false)
 
-    yDrawPos = 2 * (@window.height / 8)
-    yIncrement = @window.height / 8
-    xDrawPos = 120
-    rootTitles = ["Start Game", "Exit"]
-    preyTitles = ["Wildebeest", "Zebra", "Gazelle"]
-    menuTitles.each do |title|
-      @menuItems << [title, xDrawPos, yDrawPos]
-      yDrawPos += yIncrement
-    end
+    @rootTitles = ["Start Game", "Exit"]
+    @preyTitles = ["Wildebeest", "Zebra", "Gazelle", "Back"]
+
+    root
   end
 
   def update
@@ -38,11 +38,32 @@ class MainMenu
     elsif id == Gosu::KbDown and @selectedItem < @menuItems.length-1
       @selectedItem += 1
     elsif id == Gosu::KbReturn or id == Gosu::KbEnter
-      if @menuItems[@selectedItem][0] == "Start Game"
+      selectedTitle = @menuItems[@selectedItem][0]
+      if selectedTitle == "Start Game"
+        create_draw_list(@preyTitles, INITIAL_X_DRAW, INITIAL_Y_DRAW, INITIAL_Y_INCREMENT)
+        @selectedItem = 0
+      elsif selectedTitle == "Wildebeest" or selectedTitle == "Zebra" or selectedTitle == "Gazelle"
+        @window.new_game(selectedTitle)
         @window.GameState = :GameWorld
-      elsif @menuItems[@selectedItem][0] == "Exit"
+      elsif selectedTitle == "Back"
+        root
+      elsif selectedTitle == "Exit"
         @window.close
       end
+    end
+  end
+
+  def root
+    create_draw_list(@rootTitles, INITIAL_X_DRAW, INITIAL_Y_DRAW, INITIAL_Y_INCREMENT)
+    @selectedItem = 0
+  end
+
+  # Draws a new menu by clearing and repopulating the @menuItems array
+  def create_draw_list(titleList, xDrawPos, yDrawPos, yIncrement)
+    @menuItems = []
+    titleList.each do |title|
+      @menuItems << [title, xDrawPos, yDrawPos]
+      yDrawPos += yIncrement
     end
   end
 end

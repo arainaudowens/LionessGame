@@ -1,0 +1,3 @@
+class Gazelle < Animal
+
+end
