@@ -7,7 +7,6 @@ class Lioness < Animal
     @currentDirection = 135
     @desiredDirection = @currentDirection
 
-    #@img = Gosu::Image.new(@window, "images/lionessresized.png", false)
     @img = Gosu::Image.load_tiles(@window, "images/lionesstiles.png", -5, -1, false)
     @imgcounter = 0
 
@@ -26,55 +25,10 @@ class Lioness < Animal
   end
 
   def update
-    super
-    pounce_update
     @imgcounter %= 40
     @imgcounter += 1
 
-    unless @SpeedState == :pouncing or @SpeedState == :recovering
-      shift = @window.button_down?(Gosu::KbLeftShift) or @window.button_down?(Gosu::KbRightShift)
-      alt = @window.button_down?(Gosu::KbLeftAlt) or @window.button_down?(Gosu::KbRightAlt)
-      if shift and not alt
-        @SpeedState = :sprint
-      elsif alt
-        @SpeedState = :prowl
-      else
-        @SpeedState = :normal
-      end
-    end
-
-    left = @window.button_down?(Gosu::KbLeft)
-    right = @window.button_down?(Gosu::KbRight)
-    up = @window.button_down?(Gosu::KbUp)
-    down = @window.button_down?(Gosu::KbDown)
-    if left and right
-      left = false
-      right = false
-    end
-    if up and down
-      up = false
-      down = false
-    end
-    if left and up
-      @desiredDirection = 315
-    elsif right and up
-      @desiredDirection = 45
-    elsif left and down
-      @desiredDirection = 225
-    elsif right and down
-      @desiredDirection = 135
-    elsif left
-      @desiredDirection = 270
-    elsif right
-      @desiredDirection = 90
-    elsif up
-      @desiredDirection = 0
-    elsif down
-      @desiredDirection = 180
-    elsif @pounceCounter <= 0
-      @SpeedState = :still
-    end
-    move
+    super
   end
 
   def draw
@@ -88,7 +42,7 @@ class Lioness < Animal
   end
 
   def button_down(id)
-    if id == Gosu::KbSpace and @pounceCounter == 0
+    if (id == Gosu::KbSpace or id == Gosu::MsRight) and @pounceCounter == 0
       @SpeedState = :pouncing
       @zorder = 3
       @scaling = 1.2
@@ -100,7 +54,52 @@ class Lioness < Animal
     @SpeedHash[@SpeedState]
   end
 
-  def pounce_update
+  def still?
+    @SpeedState == :still
+  end
+
+  def get_new_direction
+    @desiredDirection = -Math.atan2((@window.mouse_y - @y), (@x - @window.mouse_x)).radians_to_gosu % 360
+  end
+
+  def update_move_state
+    update_pounce
+
+    # Hold left click to move, don't move if you're already where you want to go, and you can't be still while pouncing
+    if (!@window.button_down?(Gosu::MsLeft) or (@x == @window.mouse_x and @y == @window.mouse_y)) and @SpeedState != :pouncing
+      @SpeedState = :still
+    elsif !(@SpeedState == :pouncing or @SpeedState == :recovering)
+      shift = @window.button_down?(Gosu::KbLeftShift) or @window.button_down?(Gosu::KbRightShift)
+      alt = @window.button_down?(Gosu::KbLeftAlt) or @window.button_down?(Gosu::KbRightAlt)
+      if shift and not alt
+        @SpeedState = :sprint
+      elsif alt
+        @SpeedState = :prowl
+      else
+        @SpeedState = :normal
+      end
+    end
+  end
+
+  def move
+    if one_move_frame_away
+      @x = @window.mouse_x
+      @y = @window.mouse_y
+    else
+      super
+    end
+  end
+
+  def one_move_frame_away
+    xChange = Math.cos(@currentDirection.gosu_to_radians) * get_speed
+    yChange = Math.sin(@currentDirection.gosu_to_radians) * get_speed
+    (@window.mouse_x.between?(@x - xChange, @x + xChange) or       # You must check both ways
+      @window.mouse_x.between?(@x + xChange, @x - xChange)) and    # because xChange and yChange can
+    (@window.mouse_y.between?(@y - yChange, @y + yChange) or       # be either positive or negative
+      @window.mouse_y.between?(@y + yChange, @y - yChange))        # and between? is order sensitive
+  end
+
+  def update_pounce
     # Pounces last 10 frames with 30 frame cooldown
     if @pounceCounter == 10
       @pounceCounter = -30

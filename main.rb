@@ -65,6 +65,10 @@ class GameWindow < Gosu::Window
       :GameOver => @GameOver
     }
   end
+
+  def needs_cursor?
+    return @GameState == :GameWorld
+  end
 end
 
 window = GameWindow.new

@@ -22,7 +22,11 @@ class Animal
   end
 
   def update
-    update_direction
+    update_move_state
+    unless still?
+      turn
+      move
+    end
   end
 
   def draw
@@ -31,6 +35,18 @@ class Animal
 
   def button_down(id)
 
+  end
+
+  def get_new_direction
+    if rand(0..100).zero?
+      newdir = rand(0..359)
+      @desiredDirection = newdir if not still?
+    end
+  end
+
+  def turn
+    get_new_direction
+    update_direction
   end
 
   def update_direction
@@ -77,6 +93,10 @@ class Animal
     end
   end
 
+  def update_move_state
+    @still = rand(0..3).zero?
+  end
+
   def move
     xChange = Math.cos(@currentDirection.gosu_to_radians) * get_speed
     yChange = Math.sin(@currentDirection.gosu_to_radians) * get_speed
@@ -115,5 +135,9 @@ class Animal
 
   def get_speed
     @speed
+  end
+
+  def still?
+    @still
   end
 end
