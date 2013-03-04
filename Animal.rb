@@ -1,8 +1,9 @@
 class Animal
   attr_reader :x, :y
 
-  def initialize(window)
+  def initialize(window, gameWorld)
     @window = window
+    @GameWorld = gameWorld
 
     @x = rand(0..@window.width)
     @y = rand(0..@window.height)
@@ -37,16 +38,13 @@ class Animal
 
   end
 
-  def get_new_direction
-    if rand(0..100).zero?
-      newdir = rand(0..359)
-      @desiredDirection = newdir if not still?
-    end
-  end
-
   def turn
     get_new_direction
     update_direction
+  end
+
+  def get_new_direction
+    @desiredDirection = -Math.atan2((@y - @GameWorld.lioness.y), (@GameWorld.lioness.x - @x)).radians_to_gosu % 360
   end
 
   def update_direction
@@ -84,8 +82,7 @@ class Animal
         false
       end
     else
-      case @desiredDirection
-      when @currentDirection..nextdir, nextdir..@currentDirection
+      if @desiredDirection.between?(@currentDirection, nextdir) or @desiredDirection.between?(nextdir, @currentDirection)
         true
       else
         false
@@ -94,12 +91,13 @@ class Animal
   end
 
   def update_move_state
-    @still = rand(0..3).zero?
+    @still = false
+    @still = true unless Gosu::distance(@x, @y, @GameWorld.lioness.x, @GameWorld.lioness.y).between?(0, 250)
   end
 
   def move
-    xChange = Math.cos(@currentDirection.gosu_to_radians) * get_speed
-    yChange = Math.sin(@currentDirection.gosu_to_radians) * get_speed
+    xChange = Math.cos(@currentDirection.gosu_to_radians) * self.speed
+    yChange = Math.sin(@currentDirection.gosu_to_radians) * self.speed
     @x = xEdgeCheck(@x, xChange)
     @y = yEdgeCheck(@y, yChange)
   end
@@ -110,8 +108,8 @@ class Animal
 
     leftX = newX - xOffset
     rightX = newX + xOffset
-    newX = @window.WORLD_EDGE_LEFT if leftX <= @window.WORLD_EDGE_LEFT - xOffset
-    newX = @window.WORLD_EDGE_RIGHT if rightX >= @window.WORLD_EDGE_RIGHT + xOffset
+    newX = @GameWorld.WORLD_EDGE_LEFT if leftX <= @GameWorld.WORLD_EDGE_LEFT - xOffset
+    newX = @GameWorld.WORLD_EDGE_RIGHT if rightX >= @GameWorld.WORLD_EDGE_RIGHT + xOffset
 
     newX
   end
@@ -122,8 +120,8 @@ class Animal
 
     upY = newY - yOffset
     downY = newY + yOffset
-    newY = @window.WORLD_EDGE_UP if upY <= @window.WORLD_EDGE_UP - yOffset
-    newY = @window.WORLD_EDGE_DOWN if downY >= @window.WORLD_EDGE_DOWN + yOffset
+    newY = @GameWorld.WORLD_EDGE_UP if upY <= @GameWorld.WORLD_EDGE_UP - yOffset
+    newY = @GameWorld.WORLD_EDGE_DOWN if downY >= @GameWorld.WORLD_EDGE_DOWN + yOffset
 
     newY
   end
@@ -133,7 +131,7 @@ class Animal
     return false
   end
 
-  def get_speed
+  def speed
     @speed
   end
 

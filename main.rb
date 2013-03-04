@@ -12,21 +12,12 @@ require_relative 'Zebra'
 require_relative 'Gazelle'
 
 class GameWindow < Gosu::Window
-  attr_accessor :WORLD_EDGE_LEFT, :WORLD_EDGE_RIGHT, :WORLD_EDGE_UP, :WORLD_EDGE_DOWN
   attr_accessor :GameState
 
-  def initialize
-    super(Gosu.screen_width, Gosu.screen_height, true)
-    #super(640, 480, false)
+  def initialize(fullscreen = false)
+    super(Gosu.screen_width, Gosu.screen_height, true) if fullscreen
+    super(640, 480, false) if !fullscreen
     self.caption = "Lioness Game"
-
-    # initializing the constants for the edge of the world
-    # they must go here for now instead of GameWorld
-    # because Animals do not have access to GameWorld, just window
-    @WORLD_EDGE_LEFT = -5
-    @WORLD_EDGE_RIGHT = self.width + 5
-    @WORLD_EDGE_UP = -5
-    @WORLD_EDGE_DOWN = self.height + 5
 
     @MainMenu = MainMenu.new(self)
     @GameWorld
@@ -67,9 +58,11 @@ class GameWindow < Gosu::Window
   end
 
   def needs_cursor?
-    return @GameState == :GameWorld
+    @GameState == :GameWorld
   end
 end
 
-window = GameWindow.new
+puts "a for fullscreen, nothing otherwise"
+fs = gets.chomp == "a"
+window = GameWindow.new fs
 window.show

@@ -1,6 +1,11 @@
 class Lioness < Animal
-  def initialize(window)
-    super(window)
+  attr_reader :MAX_ENERGY, :energy
+
+  MAX_ENERGY = 200
+  SPRINT_REGEN = 0.5
+
+  def initialize(window, gameWorld)
+    super(window, gameWorld)
     @x = 50
     @y = 50
     @zorder = 2
@@ -22,6 +27,8 @@ class Lioness < Animal
 
     @pounceCounter = 0
     @turnSpeed = 5
+
+    @energy = MAX_ENERGY
   end
 
   def update
@@ -42,20 +49,13 @@ class Lioness < Animal
   end
 
   def button_down(id)
-    if (id == Gosu::KbSpace or id == Gosu::MsRight) and @pounceCounter == 0
+    if (id == Gosu::KbSpace or id == Gosu::MsRight) and @pounceCounter == 0 and @energy >= 20
       @SpeedState = :pouncing
       @zorder = 3
       @scaling = 1.2
       @pounceCounter = 1
+      @energy -= 20
     end
-  end
-
-  def get_speed
-    @SpeedHash[@SpeedState]
-  end
-
-  def still?
-    @SpeedState == :still
   end
 
   def get_new_direction
@@ -68,16 +68,28 @@ class Lioness < Animal
     # Hold left click to move, don't move if you're already where you want to go, and you can't be still while pouncing
     if (!@window.button_down?(Gosu::MsLeft) or (@x == @window.mouse_x and @y == @window.mouse_y)) and @SpeedState != :pouncing
       @SpeedState = :still
+      @energy += SPRINT_REGEN * 2
     elsif !(@SpeedState == :pouncing or @SpeedState == :recovering)
       shift = @window.button_down?(Gosu::KbLeftShift) or @window.button_down?(Gosu::KbRightShift)
       alt = @window.button_down?(Gosu::KbLeftAlt) or @window.button_down?(Gosu::KbRightAlt)
       if shift and not alt
         @SpeedState = :sprint
+        @energy -= 1
+        if @energy <= 0
+          @energy = 0
+          @SpeedState = :normal
+        end
       elsif alt
         @SpeedState = :prowl
+        @energy += SPRINT_REGEN
       else
         @SpeedState = :normal
+        @energy += SPRINT_REGEN
       end
+    end
+
+    if @energy > MAX_ENERGY
+      @energy = MAX_ENERGY
     end
   end
 
@@ -91,8 +103,8 @@ class Lioness < Animal
   end
 
   def one_move_frame_away
-    xChange = Math.cos(@currentDirection.gosu_to_radians) * get_speed
-    yChange = Math.sin(@currentDirection.gosu_to_radians) * get_speed
+    xChange = Math.cos(@currentDirection.gosu_to_radians) * self.speed
+    yChange = Math.sin(@currentDirection.gosu_to_radians) * self.speed
     (@window.mouse_x.between?(@x - xChange, @x + xChange) or       # You must check both ways
       @window.mouse_x.between?(@x + xChange, @x - xChange)) and    # because xChange and yChange can
     (@window.mouse_y.between?(@y - yChange, @y + yChange) or       # be either positive or negative
@@ -113,5 +125,13 @@ class Lioness < Animal
 
     # Update the pounce counter if necessary
     @pounceCounter += 1 if @SpeedState == :pouncing or @SpeedState == :recovering
+  end
+
+  def speed
+    @SpeedHash[@SpeedState]
+  end
+
+  def still?
+    @SpeedState == :still
   end
 end
