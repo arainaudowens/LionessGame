@@ -42,15 +42,15 @@ class GameWorld
     @window.flush
 
     # Draw the energy bar's background grey.
-    @window.draw_quad(@window.width - 3, 0, Gosu::Color::GRAY,
+    @window.draw_quad(@window.width - 2, 0, Gosu::Color::GRAY,
                       @window.width, 0, Gosu::Color::GRAY,
-                      @window.width - 3, @window.height, Gosu::Color::GRAY,
+                      @window.width - 2, @window.height, Gosu::Color::GRAY,
                       @window.width, @window.height, Gosu::Color::GRAY)
 
     # Draw the energy bar's foreground cyan.
-    @window.draw_quad(@window.width - 3, @window.height, Gosu::Color::CYAN,
+    @window.draw_quad(@window.width - 2, @window.height, Gosu::Color::CYAN,
                       @window.width, @window.height, Gosu::Color::CYAN,
-                      @window.width - 3, @window.height - @window.height * (@lioness.energy / Lioness::MAX_ENERGY), Gosu::Color::CYAN,
+                      @window.width - 2, @window.height - @window.height * (@lioness.energy / Lioness::MAX_ENERGY), Gosu::Color::CYAN,
                       @window.width, @window.height - @window.height * (@lioness.energy / Lioness::MAX_ENERGY), Gosu::Color::CYAN)
   end
 
