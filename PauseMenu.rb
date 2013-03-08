@@ -60,10 +60,7 @@ class PauseMenu
                       @menuBackground[1], @menuBackground[2], backgroundColor2,
                       @menuBackground[0], @menuBackground[3], backgroundColor2,
                       @menuBackground[1], @menuBackground[3], backgroundColor2, 12)
-    @window.draw_quad(100, 100, 0xFFFFFFFF,
-                      150, 50, 0xFFFFFFFF,
-                      200, 100, 0xFFFFFFFF,
-                      150, 150, 0xFFFFFFFF, 100)
+    
     # Draw the menu items
     @menuItems.each do |i|
       @font.draw(i[0], i[1], i[2], 13)

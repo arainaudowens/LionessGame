@@ -7,9 +7,10 @@ class Zebra < Animal
     @turnSpeed = 3
 
     @still = false
+    @window.draw
   end
 
   def draw
-    @img[(Gosu::milliseconds / 500) % @img.length].draw_rot(@x, @y, @zorder, @currentDirection)
+    @img[(Gosu::milliseconds / 500) % @img.length].draw_rot(@body.pos.x, @body.pos.y, @zorder, @currentDirection)
   end
 end

@@ -1,21 +1,18 @@
 class Animal
-  attr_reader :x, :y
-
   def initialize(window, gameWorld)
     @window = window
     @GameWorld = gameWorld
-
-    @x = rand(0..@window.width)
-    @y = rand(0..@window.height)
-    while @x < 200 and @y < 200
-      @x = rand(0..@window.width)
-      @y = rand(0..@window.height)
-    end
 
     @currentDirection = rand(0..359)
     @desiredDirection = @currentDirection
     @turnSpeed = 5
     @speed = 5
+
+    #Chipmunk physicsy stuff
+    @body = CP::Body.new(1.0, CP::INFINITY)  # mass, moi
+    @body.pos = CP::Vec2.new(rand(0..@window.width), rand(0..@window.height))
+    @body.object = self
+    gameWorld.space.add_body(@body)
 
     @img = Gosu::Image.load_tiles(@window, "images/wildebeesttiles.png", -5, -1, false)[0]
     @zorder = 1
@@ -31,7 +28,7 @@ class Animal
   end
 
   def draw
-    @img.draw_rot(@x, @y, @zorder, @currentDirection, 0.5, 0.5, @scaling, @scaling)
+    @img.draw_rot(@body.pos.x, @body.pos.y, @zorder, @currentDirection, 0.5, 0.5, @scaling, @scaling)
   end
 
   def button_down(id)
@@ -44,7 +41,7 @@ class Animal
   end
 
   def get_new_direction
-    @desiredDirection = -Math.atan2((@y - @GameWorld.lioness.y), (@GameWorld.lioness.x - @x)).radians_to_gosu % 360
+    @desiredDirection = -Math.atan2((@body.pos.y - @GameWorld.lioness.y), (@GameWorld.lioness.x - @body.pos.x)).radians_to_gosu % 360
   end
 
   def update_direction
@@ -92,14 +89,14 @@ class Animal
 
   def update_move_state
     @still = false
-    @still = true unless Gosu::distance(@x, @y, @GameWorld.lioness.x, @GameWorld.lioness.y).between?(0, 250)
+    @still = true unless Gosu::distance(@body.pos.x, @body.pos.y, @GameWorld.lioness.x, @GameWorld.lioness.y).between?(0, 250)
   end
 
   def move
     xChange = Math.cos(@currentDirection.gosu_to_radians) * self.speed
     yChange = Math.sin(@currentDirection.gosu_to_radians) * self.speed
-    @x = xEdgeCheck(@x, xChange)
-    @y = yEdgeCheck(@y, yChange)
+    @body.pos.x = xEdgeCheck(@body.pos.x, xChange)
+    @body.pos.y = yEdgeCheck(@body.pos.y, yChange)
   end
 
   def xEdgeCheck(x, xChange)
@@ -127,7 +124,7 @@ class Animal
   end
 
   def collide?(animal)
-    return true if (@x - animal.x).abs < 20 and (@y - animal.y).abs < 20
+    return true if (@body.pos.x - animal.x).abs < 20 and (@body.pos.y - animal.y).abs < 20
     return false
   end
 

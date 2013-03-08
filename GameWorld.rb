@@ -1,5 +1,5 @@
 class GameWorld
-  attr_accessor :WORLD_EDGE_LEFT, :WORLD_EDGE_RIGHT, :WORLD_EDGE_UP, :WORLD_EDGE_DOWN, :lioness
+  attr_accessor :WORLD_EDGE_LEFT, :WORLD_EDGE_RIGHT, :WORLD_EDGE_UP, :WORLD_EDGE_DOWN, :lioness, :space
 
   def initialize(window, animalType)
     @window = window
@@ -9,6 +9,9 @@ class GameWorld
     @WORLD_EDGE_RIGHT = @window.width + 5
     @WORLD_EDGE_UP = -5
     @WORLD_EDGE_DOWN = @window.height + 5
+
+    #Chipmunk stuff
+    @space = CP::Space.new
 
     @AnimalHash = {
       "Wildebeest" => Wildebeest,
@@ -26,7 +29,7 @@ class GameWorld
     end
     @animals.map do |a|
       if a.collide?(@lioness)
-        @window.GameState = :GameOver
+        #@window.GameState = :GameOver
       end
     end
   end

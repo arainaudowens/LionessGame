@@ -33,6 +33,7 @@ class MainMenu
 
   def button_down(id)
     if id == Gosu::KbEscape
+      
       @window.close
 
     elsif id == Gosu::KbUp and @selectedItem != @menuItems.index { |x| !x[0].nil? }

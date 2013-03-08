@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'gosu'
+require 'chipmunk'
 
 require_relative 'GameWorld'
 require_relative 'MainMenu'

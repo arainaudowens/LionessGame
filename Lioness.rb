@@ -6,8 +6,7 @@ class Lioness < Animal
 
   def initialize(window, gameWorld)
     super(window, gameWorld)
-    @x = 50
-    @y = 50
+
     @zorder = 2
     @currentDirection = 135
     @desiredDirection = @currentDirection
@@ -25,6 +24,17 @@ class Lioness < Animal
       :pouncing => 10
     }
 
+    #Chipmunk physicsy stuff
+    @body = CP::Body.new(1.0, CP::INFINITY)  # mass, moi
+    @body.pos = CP::Vec2.new(50, 50)
+    @body.object = self
+    #poly = [Vec2.new(-17, -20), Vec2.new(-17, 14), Vec2.new(-13, 19), Vec2.new(13, 19), Vec2.new(17, 14), Vec2.new(17, -20), Vec2.new(13, -25), Vec2.new(-13, -25)]
+    @shape = CP::Shape::Circle.new(@body, 30, CP::Vec2.new(0,0))
+    @shape.collision_type = :lioness
+    @shape.object = self
+    gameWorld.space.add_shape(@shape)
+    gameWorld.space.add_collision_handler(:lioness, :prey, Prey_Collisions.new)
+
     @pounceCounter = 0
     @turnSpeed = 5
 
@@ -40,11 +50,11 @@ class Lioness < Animal
 
   def draw
     if @SpeedState == :pouncing
-      @img[4].draw_rot(@x, @y, @zorder, @currentDirection, 0.5, 0.5, @scaling, @scaling)
+      @img[4].draw_rot(@body.pos.x, @body.pos.y, @zorder, @currentDirection, 0.5, 0.5, @scaling, @scaling)
     elsif @SpeedState == :still
-      @img[0].draw_rot(@x, @y, @zorder, @currentDirection)
+      @img[0].draw_rot(@body.pos.x, @body.pos.y, @zorder, @currentDirection)
     else
-      @img[(@imgcounter/10).floor].draw_rot(@x, @y, @zorder, @currentDirection)
+      @img[(@imgcounter/10).floor].draw_rot(@body.pos.x, @body.pos.y, @zorder, @currentDirection)
     end
   end
 
@@ -59,14 +69,14 @@ class Lioness < Animal
   end
 
   def get_new_direction
-    @desiredDirection = -Math.atan2((@window.mouse_y - @y), (@x - @window.mouse_x)).radians_to_gosu % 360
+    @desiredDirection = -Math.atan2((@window.mouse_y - @body.pos.y), (@body.pos.x - @window.mouse_x)).radians_to_gosu % 360
   end
 
   def update_move_state
     update_pounce
 
     # Hold left click to move, don't move if you're already where you want to go, and you can't be still while pouncing
-    if (!@window.button_down?(Gosu::MsLeft) or (@x == @window.mouse_x and @y == @window.mouse_y)) and @SpeedState != :pouncing
+    if (!@window.button_down?(Gosu::MsLeft) or (@body.pos.x == @window.mouse_x and @body.pos.y == @window.mouse_y)) and @SpeedState != :pouncing
       @SpeedState = :still
       @energy += SPRINT_REGEN * 2
     elsif !(@SpeedState == :pouncing or @SpeedState == :recovering)
@@ -95,8 +105,8 @@ class Lioness < Animal
 
   def move
     if one_move_frame_away
-      @x = @window.mouse_x
-      @y = @window.mouse_y
+      @body.pos.x = @window.mouse_x
+      @body.pos.y = @window.mouse_y
     else
       super
     end
@@ -105,10 +115,10 @@ class Lioness < Animal
   def one_move_frame_away
     xChange = Math.cos(@currentDirection.gosu_to_radians) * self.speed
     yChange = Math.sin(@currentDirection.gosu_to_radians) * self.speed
-    (@window.mouse_x.between?(@x - xChange, @x + xChange) or       # You must check both ways
-      @window.mouse_x.between?(@x + xChange, @x - xChange)) and    # because xChange and yChange can
-    (@window.mouse_y.between?(@y - yChange, @y + yChange) or       # be either positive or negative
-      @window.mouse_y.between?(@y + yChange, @y - yChange))        # and between? is order sensitive
+    (@window.mouse_x.between?(@body.pos.x - xChange, @body.pos.x + xChange) or       # You must check both ways
+      @window.mouse_x.between?(@body.pos.x + xChange, @body.pos.x - xChange)) and    # because xChange and yChange can
+    (@window.mouse_y.between?(@body.pos.y - yChange, @body.pos.y + yChange) or       # be either positive or negative
+      @window.mouse_y.between?(@body.pos.y + yChange, @body.pos.y - yChange))        # and between? is order sensitive
   end
 
   def update_pounce
@@ -133,5 +143,19 @@ class Lioness < Animal
 
   def still?
     @SpeedState == :still
+  end
+
+  def x
+    @body.pos.x
+  end
+
+  def y
+    @body.pos.y
+  end
+
+  class Prey_Collisions
+    def begin (lioness_s, prey_s, contact)
+      puts "ow"
+    end
   end
 end
