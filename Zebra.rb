@@ -7,7 +7,6 @@ class Zebra < Animal
     @turnSpeed = 3
 
     @still = false
-    @window.draw
   end
 
   def draw

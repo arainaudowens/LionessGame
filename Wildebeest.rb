@@ -9,15 +9,23 @@ class Wildebeest < Animal
 
     @still = false
 
-    #Chipmunk physicsy stuff
-    #poly = [Vec2.new(-17, -20), Vec2.new(-17, 14), Vec2.new(-13, 19), Vec2.new(13, 19), Vec2.new(17, 14), Vec2.new(17, -20), Vec2.new(13, -25), Vec2.new(-13, -25)]
-    @shape = CP::Shape::Circle.new(@body, 30, CP::Vec2.new(0,0))
-    @shape.collision_type = :prey
-    @shape.object = self
-    gameWorld.space.add_shape(@shape)
+    # Chipmunk physicsy stuff
+    bodyPoly = [CP::Vec2.new(-7, -40), CP::Vec2.new(-11, -13), CP::Vec2.new(-11, 17), CP::Vec2.new(-4, 30), CP::Vec2.new(3, 30), CP::Vec2.new(10, 17), CP::Vec2.new(10, -13), CP::Vec2.new(6, -40)]
+    bodyShape = CP::Shape::Poly.new(@body, bodyPoly, CP::Vec2::ZERO)
+    bodyShape.collision_type = :prey
+    bodyShape.object = self
+    gameWorld.space.add_shape(bodyShape)
   end
 
   def draw
-    @img[(Gosu::milliseconds / 500) % @img.length].draw_rot(@body.pos.x, @body.pos.y, @zorder, @currentDirection)
+    if @dead
+      @img.last.draw_rot(@body.pos.x, @body.pos.y, @zorder, @currentDirection)
+    else
+      @img[(Gosu::milliseconds / 500) % 4].draw_rot(@body.pos.x, @body.pos.y, @zorder, @currentDirection)
+    end
+  end
+
+  def die
+    @dead = true
   end
 end

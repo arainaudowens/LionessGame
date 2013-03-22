@@ -3,16 +3,17 @@ class Animal
     @window = window
     @GameWorld = gameWorld
 
-    @currentDirection = rand(0..359)
-    @desiredDirection = @currentDirection
     @turnSpeed = 5
     @speed = 5
 
-    #Chipmunk physicsy stuff
+    # Chipmunk physicsy stuff
     @body = CP::Body.new(1.0, CP::INFINITY)  # mass, moi
-    @body.pos = CP::Vec2.new(rand(0..@window.width), rand(0..@window.height))
+    @body.pos = CP::Vec2.new(rand(100..@window.width), rand(100..@window.height))
     @body.object = self
     gameWorld.space.add_body(@body)
+
+    @currentDirection = rand(0..359)
+    @desiredDirection = @currentDirection
 
     @img = Gosu::Image.load_tiles(@window, "images/wildebeesttiles.png", -5, -1, false)[0]
     @zorder = 1
@@ -25,6 +26,7 @@ class Animal
       turn
       move
     end
+    @body.a = @currentDirection.gosu_to_radians
   end
 
   def draw

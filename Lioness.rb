@@ -1,17 +1,17 @@
 class Lioness < Animal
-  attr_reader :MAX_ENERGY, :energy
+  attr_reader :window, :MAX_ENERGY, :energy
 
   MAX_ENERGY = 200
-  SPRINT_REGEN = 0.5
+  ENERGY_REGEN = 0.5
 
   def initialize(window, gameWorld)
     super(window, gameWorld)
 
     @zorder = 2
     @currentDirection = 135
-    @desiredDirection = @currentDirection
+    @desiredDirection = 135
 
-    @img = Gosu::Image.load_tiles(@window, "images/lionesstiles.png", -5, -1, false)
+    @img = Gosu::Image.load_tiles(@window, "images/lionesstiles.png", -6, -1, false)
     @imgcounter = 0
 
     @SpeedState = :normal
@@ -24,15 +24,27 @@ class Lioness < Animal
       :pouncing => 10
     }
 
-    #Chipmunk physicsy stuff
-    @body = CP::Body.new(1.0, CP::INFINITY)  # mass, moi
+    # Initialize the lioness in Chipmunk space
+    @body = CP::Body.new(1.0, CP::INFINITY) # mass, moi
     @body.pos = CP::Vec2.new(50, 50)
     @body.object = self
-    #poly = [Vec2.new(-17, -20), Vec2.new(-17, 14), Vec2.new(-13, 19), Vec2.new(13, 19), Vec2.new(17, 14), Vec2.new(17, -20), Vec2.new(13, -25), Vec2.new(-13, -25)]
-    @shape = CP::Shape::Circle.new(@body, 30, CP::Vec2.new(0,0))
-    @shape.collision_type = :lioness
-    @shape.object = self
-    gameWorld.space.add_shape(@shape)
+    gameWorld.space.add_body(@body)
+
+    # Only the front part of the lioness can kill.
+    huntingPoly = [CP::Vec2.new(9, -19), CP::Vec2.new(9, -36), CP::Vec2.new(4, -41), CP::Vec2.new(-4, -41), CP::Vec2.new(-9, -36), CP::Vec2.new(-9, -19)]
+    huntingShape = CP::Shape::Poly.new(@body, huntingPoly, CP::Vec2::ZERO)
+    huntingShape.collision_type = :lioness
+    huntingShape.object = self
+
+    # The back part should just be treated as a solid body (working as :prey currently)
+    bodyPoly = [CP::Vec2.new(-9, 22), CP::Vec2.new(-2, 31), CP::Vec2.new(2, 31), CP::Vec2.new(9, 22), CP::Vec2.new(9, -19), CP::Vec2.new(-9, -19)]
+    bodyShape = CP::Shape::Poly.new(@body, bodyPoly, CP::Vec2::ZERO)
+    bodyShape.collision_type = :prey
+    bodyShape.object = self
+
+    # Add these shapes to the Chipmunk space
+    gameWorld.space.add_shape(huntingShape)
+    gameWorld.space.add_shape(bodyShape)
     gameWorld.space.add_collision_handler(:lioness, :prey, Prey_Collisions.new)
 
     @pounceCounter = 0
@@ -49,10 +61,12 @@ class Lioness < Animal
   end
 
   def draw
-    if @SpeedState == :pouncing
-      @img[4].draw_rot(@body.pos.x, @body.pos.y, @zorder, @currentDirection, 0.5, 0.5, @scaling, @scaling)
+    if @window.GameState == :GameOver
+      @img.last.draw_rot(@body.pos.x, @body.pos.y, @zorder, @currentDirection)
     elsif @SpeedState == :still
       @img[0].draw_rot(@body.pos.x, @body.pos.y, @zorder, @currentDirection)
+    elsif @SpeedState == :pouncing
+      @img[4].draw_rot(@body.pos.x, @body.pos.y, @zorder, @currentDirection, 0.5, 0.5, @scaling, @scaling)
     else
       @img[(@imgcounter/10).floor].draw_rot(@body.pos.x, @body.pos.y, @zorder, @currentDirection)
     end
@@ -78,7 +92,7 @@ class Lioness < Animal
     # Hold left click to move, don't move if you're already where you want to go, and you can't be still while pouncing
     if (!@window.button_down?(Gosu::MsLeft) or (@body.pos.x == @window.mouse_x and @body.pos.y == @window.mouse_y)) and @SpeedState != :pouncing
       @SpeedState = :still
-      @energy += SPRINT_REGEN * 2
+      @energy += ENERGY_REGEN * 2
     elsif !(@SpeedState == :pouncing or @SpeedState == :recovering)
       shift = @window.button_down?(Gosu::KbLeftShift) or @window.button_down?(Gosu::KbRightShift)
       alt = @window.button_down?(Gosu::KbLeftAlt) or @window.button_down?(Gosu::KbRightAlt)
@@ -91,10 +105,10 @@ class Lioness < Animal
         end
       elsif alt
         @SpeedState = :prowl
-        @energy += SPRINT_REGEN
+        @energy += ENERGY_REGEN
       else
         @SpeedState = :normal
-        @energy += SPRINT_REGEN
+        @energy += ENERGY_REGEN
       end
     end
 
@@ -155,7 +169,8 @@ class Lioness < Animal
 
   class Prey_Collisions
     def begin (lioness_s, prey_s, contact)
-      puts "ow"
+      prey_s.object.die
+      lioness_s.object.window.GameState = :GameOver
     end
   end
 end
