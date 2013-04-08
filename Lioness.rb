@@ -1,7 +1,7 @@
 class Lioness < Animal
   attr_reader :window, :MAX_ENERGY, :energy
 
-  MAX_ENERGY = 200
+  MAX_ENERGY = 200.0
   ENERGY_REGEN = 0.5
 
   def initialize(window, gameWorld)
