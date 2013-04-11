@@ -8,7 +8,7 @@ class Lioness < Animal
     super(window, gameWorld)
 
     @zorder = 2
-    @currentDirection = 135
+
     @desiredDirection = 135
 
     @img = Gosu::Image.load_tiles(@window, "images/lionesstiles.png", -6, -1, false)
@@ -48,7 +48,7 @@ class Lioness < Animal
     gameWorld.space.add_collision_handler(:lioness, :prey, Prey_Collisions.new)
 
     @pounceCounter = 0
-    @turnSpeed = 5
+    @turnSpeed = Math::PI / 36.0
 
     @energy = MAX_ENERGY
   end
@@ -62,13 +62,13 @@ class Lioness < Animal
 
   def draw
     if @window.GameState == :GameOver
-      @img.last.draw_rot(@body.pos.x, @body.pos.y, @zorder, @currentDirection)
+      @img.last.draw_rot(@body.pos.x, @body.pos.y, @zorder, @body.a.radians_to_gosu)
     elsif @SpeedState == :still
-      @img[0].draw_rot(@body.pos.x, @body.pos.y, @zorder, @currentDirection)
+      @img[0].draw_rot(@body.pos.x, @body.pos.y, @zorder, @body.a.radians_to_gosu)
     elsif @SpeedState == :pouncing
-      @img[4].draw_rot(@body.pos.x, @body.pos.y, @zorder, @currentDirection, 0.5, 0.5, @scaling, @scaling)
+      @img[4].draw_rot(@body.pos.x, @body.pos.y, @zorder, @body.a.radians_to_gosu, 0.5, 0.5, @scaling, @scaling)
     else
-      @img[(@imgcounter/10).floor].draw_rot(@body.pos.x, @body.pos.y, @zorder, @currentDirection)
+      @img[(@imgcounter/10).floor].draw_rot(@body.pos.x, @body.pos.y, @zorder, @body.a.radians_to_gosu)
     end
   end
 
@@ -83,7 +83,7 @@ class Lioness < Animal
   end
 
   def get_new_direction
-    @desiredDirection = -Math.atan2((@window.mouse_y - @body.pos.y), (@body.pos.x - @window.mouse_x)).radians_to_gosu % 360
+    @desiredDirection = Gosu::angle(@body.pos.x, @body.pos.y, @window.mouse_x, @window.mouse_y).gosu_to_radians
   end
 
   def update_move_state
@@ -127,8 +127,8 @@ class Lioness < Animal
   end
 
   def one_move_frame_away
-    xChange = Math.cos(@currentDirection.gosu_to_radians) * self.speed
-    yChange = Math.sin(@currentDirection.gosu_to_radians) * self.speed
+    xChange = Math.cos(@body.a) * self.speed
+    yChange = Math.sin(@body.a) * self.speed
     (@window.mouse_x.between?(@body.pos.x - xChange, @body.pos.x + xChange) or       # You must check both ways
       @window.mouse_x.between?(@body.pos.x + xChange, @body.pos.x - xChange)) and    # because xChange and yChange can
     (@window.mouse_y.between?(@body.pos.y - yChange, @body.pos.y + yChange) or       # be either positive or negative

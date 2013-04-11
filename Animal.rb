@@ -3,17 +3,17 @@ class Animal
     @window = window
     @GameWorld = gameWorld
 
-    @turnSpeed = 5
+    @turnSpeed = Math::PI / 36
     @speed = 5
 
     # Chipmunk physicsy stuff
     @body = CP::Body.new(1.0, CP::INFINITY)  # mass, moi
-    @body.pos = CP::Vec2.new(rand(100..@window.width), rand(100..@window.height))
+    @body.pos = CP::Vec2.new(rand(200..@window.width), rand(200..@window.height))
     @body.object = self
+    @body.a = rand * 2 * Math::PI
     gameWorld.space.add_body(@body)
 
-    @currentDirection = rand(0..359)
-    @desiredDirection = @currentDirection
+    @desiredDirection = @body.a
 
     @img = Gosu::Image.load_tiles(@window, "images/wildebeesttiles.png", -5, -1, false)[0]
     @zorder = 1
@@ -26,11 +26,10 @@ class Animal
       turn
       move
     end
-    @body.a = @currentDirection.gosu_to_radians
   end
 
   def draw
-    @img.draw_rot(@body.pos.x, @body.pos.y, @zorder, @currentDirection, 0.5, 0.5, @scaling, @scaling)
+    @img.draw_rot(@body.pos.x, @body.pos.y, @zorder, @body.a.radians_to_gosu, 0.5, 0.5, @scaling, @scaling)
   end
 
   def button_down(id)
@@ -43,29 +42,32 @@ class Animal
   end
 
   def get_new_direction
-    @desiredDirection = -Math.atan2((@body.pos.y - @GameWorld.lioness.y), (@GameWorld.lioness.x - @body.pos.x)).radians_to_gosu % 360
+    @desiredDirection = Gosu::angle(@GameWorld.lioness.x, @GameWorld.lioness.y, @body.pos.x, @body.pos.y).gosu_to_radians
   end
 
   def update_direction
     # A positive turn direction is turning right, a negative is turning left
-    ddiff = @currentDirection - @desiredDirection
-    if ddiff >= 180 or (ddiff < 0 and ddiff >= -180)
+    ddiff = Gosu::angle_diff(@body.a.radians_to_gosu, @desiredDirection.radians_to_gosu)
+
+    if ddiff > 0
       turnDirection = 1
-    elsif ddiff <= -180 or (ddiff > 0 and ddiff <= 180)
+    elsif ddiff < 0
       turnDirection = -1
     else
       turnDirection = 0
     end
 
     # Turn towards the desired direction
-    if one_turn_frame_away(@currentDirection + (@turnSpeed * turnDirection))
-      @currentDirection = @desiredDirection
+    # if you're one turn-frame away, go straight to the desired direction
+    if ddiff.abs < @turnSpeed.radians_to_degrees
+      @body.a = @desiredDirection
+    # otherwise, turn at your turn speed.
     else
-      @currentDirection += @turnSpeed * turnDirection
-      @currentDirection %= 360
+      @body.a += @turnSpeed * turnDirection
     end
   end
 
+=begin
   def one_turn_frame_away(nextdir)
     case nextdir
     when -Float::INFINITY...0 # looped around left
@@ -88,6 +90,7 @@ class Animal
       end
     end
   end
+=end
 
   def update_move_state
     @still = false
@@ -95,8 +98,8 @@ class Animal
   end
 
   def move
-    xChange = Math.cos(@currentDirection.gosu_to_radians) * self.speed
-    yChange = Math.sin(@currentDirection.gosu_to_radians) * self.speed
+    xChange = Math.cos(@body.a) * self.speed
+    yChange = Math.sin(@body.a) * self.speed
     @body.pos.x = xEdgeCheck(@body.pos.x, xChange)
     @body.pos.y = yEdgeCheck(@body.pos.y, yChange)
   end

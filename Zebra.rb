@@ -4,7 +4,8 @@ class Zebra < Animal
 
     @img = Gosu::Image.load_tiles(@window, "images/zebratiles.png", -4, -1, false)
     @speed = 2.5
-    @turnSpeed = 3
+    @turnSpeed = Math::PI / 60
+    @FoV
 
     @still = false
 
@@ -17,7 +18,7 @@ class Zebra < Animal
   end
 
   def draw
-    @img[(Gosu::milliseconds / 500) % @img.length].draw_rot(@body.pos.x, @body.pos.y, @zorder, @currentDirection)
+    @img[(Gosu::milliseconds / 500) % @img.length].draw_rot(@body.pos.x, @body.pos.y, @zorder, @body.a.radians_to_gosu)
   end
 
   def die

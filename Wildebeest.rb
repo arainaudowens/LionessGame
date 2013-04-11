@@ -4,7 +4,7 @@ class Wildebeest < Animal
 
     @img = Gosu::Image.load_tiles(@window, "images/wildebeesttiles.png", -5, -1, false)
     @speed = 1.5
-    @turnSpeed = 2
+    @turnSpeed = Math::PI / 90
     @FoV
 
     @still = false
@@ -19,9 +19,9 @@ class Wildebeest < Animal
 
   def draw
     if @dead
-      @img.last.draw_rot(@body.pos.x, @body.pos.y, @zorder, @currentDirection)
+      @img.last.draw_rot(@body.pos.x, @body.pos.y, @zorder, @body.a.radians_to_gosu)
     else
-      @img[(Gosu::milliseconds / 500) % 4].draw_rot(@body.pos.x, @body.pos.y, @zorder, @currentDirection)
+      @img[(Gosu::milliseconds / 500) % 4].draw_rot(@body.pos.x, @body.pos.y, @zorder, @body.a.radians_to_gosu)
     end
   end
 
