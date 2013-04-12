@@ -67,31 +67,6 @@ class Animal
     end
   end
 
-=begin
-  def one_turn_frame_away(nextdir)
-    case nextdir
-    when -Float::INFINITY...0 # looped around left
-      if @currentDirection > @desiredDirection or @desiredDirection > nextdir % 360
-        true
-      else
-        false
-      end
-    when 360..Float::INFINITY # looped around right
-      if @currentDirection < @desiredDirection or @desiredDirection < nextdir % 360
-        true
-      else
-        false
-      end
-    else
-      if @desiredDirection.between?(@currentDirection, nextdir) or @desiredDirection.between?(nextdir, @currentDirection)
-        true
-      else
-        false
-      end
-    end
-  end
-=end
-
   def update_move_state
     @still = false
     @still = true unless Gosu::distance(@body.pos.x, @body.pos.y, @GameWorld.lioness.x, @GameWorld.lioness.y).between?(0, 250)
